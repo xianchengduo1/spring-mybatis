@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace命名空间
+ 1、分类作用，避免sql语句重复 
+ 2、与java接口取得关系--> 
+
+<mapper namespace="com.framestudy.spring_mybatis.usermag.mapper.UserMapper">
+    
+    
+      <!--结果集到对象，先查询后映射  -->
+      <resultMap type="UserInfo" id="userMap">
+		<id property="id" column="id" javaType="java.lang.Long"/>
+		<result property="userName" column="user_name" javaType="java.lang.String"/>
+		<result property="loginName" column="login_name" javaType="java.lang.String"/>
+		<result property="pwd" column="password" javaType="java.lang.String"/>
+		<result property="age" column="age" javaType="int"/>
+	</resultMap>
+    
+     
+
+
+<!-- 批量新增，标准与法 insert into表（字段...） values (),(),......-->
+	<insert id="batchSaveUserInfo" parameterType="java.util.List">
+		insert into t_user (user_name,password,age,login_name) values 
+		<foreach collection="users" item="user" separator=",">
+			(#{user.userName},#{user.pwd},#{user.age},#{user.loginName})
+		</foreach>
+	</insert>
+	
+<!--批量删除 -->
+	<delete id="batchDeleteUserInfo">
+		delete from t_user where id in 
+		<foreach collection="users" item="user" open="(" close=")" separator=",">
+		#{user.id}
+		</foreach>
+	</delete>
+	
+	
+
+<!-- 在mybatis 框架中，取值有两种：#{}，${}
+  第一个区别在于：#取值时候，会在参数两侧添加单引号''
+  然而$取值的时候，则不会添加单引号 
+ 第二个区别：#取值，编译方式采用预编译，$取值，编译方式直接编译（可能会有sql注入的危险）
+  -->
+<insert id="saveUserInfo" useGeneratedKeys="true" keyProperty="id">
+	insert into userinfo (username,pwd,age) values (#{userName},#{pwd},#{age})
+</insert>
+
+<update id="updateUserInfo" parameterType="UserInfo">
+update userinfo set username = #{u.userName},pwd = #{u.pwd},age=#{u.age} where id =#{u.id}
+</update>
+
+
+		<!-- id属性为必填属性，其他属性是选填 -->
+
+	<delete id="deleteUserInfo">
+		delete from t_user where id = #{id}
+	</delete>
+  <select id="getUserInfoById" resultMap="userMap">
+        select * from t_user where id = #{id}
+   </select>
+   
+    <select id="getUserByLoginNameAndPwd" resultMap="userMap">
+       select user_name from t_user where login_name = #{loginName} and password = #{pwd}
+   </select>
+
+   <!-- map中取值，依旧还是采用#或则$,只是取值采用，map键的方式 
+    resultType与resultMap一样，都是用来映射返回结果集与对象的关系 
+             只不过resultType需要结果集中字段名和对象的属性名保持名称一致
+    %最好写在后面 -->
+  <select id="queryUserListByMap" resultType="UserInfo">
+		select login_name as loginName,password as pwd from t_user where user_name like CONCAT('%',#{map.userName},'%') 
+		and age = #{map.age}
+	</select>
+
+</mapper>

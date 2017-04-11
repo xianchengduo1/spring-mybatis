@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+<!--log4j  -->
+   <settings>
+   <setting name="logImpl" value="LOG4J"/>
+   </settings>
+   
+		<!-- 给类取类的别名 ,写在seting下方-->
+		<typeAliases>
+		 <package name="com.framestudy.spring_mybatis.usermag.beans"/>
+		</typeAliases>
+
+<!-- 数据库的连接环境，mybatis会给每一个环境产生一个对应的数据库连接池 -->
+	<environments default="01">
+		<environment id="01">
+			<transactionManager type="JDBC"></transactionManager>
+			<dataSource type="POOLED">
+				<property name="driver" value="org.gjt.mm.mysql.Driver"/>
+				<!-- &amp;是&符号的转义 -->
+				<property name="url" value="jdbc:mysql://localhost:3306/spring-mybatis?useUnicode=true&amp;characterEncoding=UTF-8"/>
+				<property name="username" value="root"/>
+				<property name="password" value="123456"></property>
+			</dataSource>
+		</environment>
+	</environments>
+	
+	<!-- SQL映射器 -->
+	
+	 <mappers>
+	 <!--  单独告知sql映射器，缺点是：如果领域对象太多，维护很困难-->
+<!-- 	 <mapper resource="com.framestudy.spring_mybatis.usermag.mapper"/> -->
+	 <!--  批量扫描sql映射器-->
+	 <package name="com.framestudy.spring_mybatis.usermag.mapper"/>
+	 
+	 </mappers>
+
+
+</configuration>
+
